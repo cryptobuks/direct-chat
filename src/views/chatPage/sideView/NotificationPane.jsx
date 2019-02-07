@@ -5,8 +5,6 @@ import ContactItem from './ContactItem';
 import { List, ListItem } from '@material-ui/core';
 import classNames from 'classnames';
 import Button from '@material-ui/core/Button';
-import PropTypes from 'prop-types';
-import Contact from 'model/Contact';
 import notificationStore from 'stores/NotificationStore';
 import { observer } from 'mobx-react-lite';
 import { ReactComponent as Loading } from 'assets/img/loading.svg';
@@ -23,18 +21,17 @@ function NotificationPane(props) {
       className={classNames({ [classes.container]: true, [className]: true })}
     >
       {notificationStore.notifications.map((notification, index) => (
-        <ListItem
-          key={notification.contact.email}
-          dense
-          className={classes.listItem}
-        >
+        <ListItem key={notification.email} dense className={classes.listItem}>
           <ContactItem
-            name={notification.contact.name}
-            status={notification.contact.status}
-            image={notification.contact.image}
+            name={notification.name}
+            status={notification.status}
+            image={notification.image}
           />
-          {notification.type === 'friend-request' && getFriedRequestView(props)}
-          {notification.type === 'friend-request-declined' &&
+          {notification.type === 'sentFriendRequest' &&
+            getSentFriedRequestView(props)}
+          {notification.type === 'receivedFriendRequest' &&
+            getFriedRequestView(props)}
+          {notification.type === 'friendRequestDeclined' &&
             getFriedRequestDeniedView(props)}
         </ListItem>
       ))}
@@ -52,12 +49,22 @@ function getFriedRequestDeniedView(props) {
   );
 }
 
+function getSentFriedRequestView(props) {
+  const { classes } = props;
+
+  return (
+    <div>
+      <div className={classes.typeText}>Sent Request</div>
+    </div>
+  );
+}
+
 function getFriedRequestView(props) {
   const { classes } = props;
 
   return (
     <div>
-      <div className={classes.typeText}>sent friend request</div>
+      <div className={classes.typeText}>Friend Request</div>
       <div>
         <Button variant="contained" color="primary" className={classes.button}>
           Accept
@@ -73,14 +80,5 @@ function getFriedRequestView(props) {
     </div>
   );
 }
-
-NotificationPane.propTypes = {
-  notifications: PropTypes.arrayOf(
-    PropTypes.shape({
-      contact: PropTypes.instanceOf(Contact),
-      type: PropTypes.oneOf(['friend-request', 'friend-request-declined'])
-    })
-  )
-};
 
 export default withStyles(notificationPaneStyle)(observer(NotificationPane));

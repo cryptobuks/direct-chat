@@ -7,9 +7,13 @@ import { List, ListItem } from '@material-ui/core';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import contactStore from 'stores/ContactStore';
+import notificationStore from 'stores/NotificationStore';
 import { ReactComponent as Loading } from 'assets/img/loading.svg';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
+import CheckIcon from '@material-ui/icons/Check';
 
 function ContactPane(props) {
   const { classes, className, onContactClick } = props;
@@ -21,12 +25,16 @@ function ContactPane(props) {
     console.log(event.target.value);
     let searchText = event.target.value;
     setSearchInput(searchText);
+    searchText = searchText.trim();
     if (searchText === '') {
       if (globalSearch) {
         contactStore.emptyAllContacts();
       } else {
         contactStore.resetAllContacts();
       }
+      return;
+    } else if (searchText.length < 3) {
+      contactStore.emptyAllContacts();
       return;
     }
 
@@ -52,6 +60,18 @@ function ContactPane(props) {
     } else {
       contactStore.resetAllContacts();
     }
+  };
+
+  const handleAddContact = contact => event => {
+    event.stopPropagation();
+    console.log('Add contact:' + contact.email);
+    contact.type = 'sentFriendRequest';
+    notificationStore.sendFriendRequest(contact);
+  };
+
+  const handleProfileClick = contact => event => {
+    event.stopPropagation();
+    console.log('profile Click:' + contact.email);
   };
 
   if (contactStore.loadingAllContacts) {
@@ -96,21 +116,48 @@ function ContactPane(props) {
         dense
         className={classNames({ [classes.container]: true, [className]: true })}
       >
-        {contactStore.allContacts.map((contact, index) => (
-          <ListItem
-            key={index}
-            selected={activeIndex === index}
-            button
-            onClick={handleContactClick(contact, index)}
-            className={classes.listItem}
-          >
-            <ContactItem
-              name={contact.name}
-              status={contact.status}
-              image={contact.image}
-            />
-          </ListItem>
-        ))}
+        {contactStore.allContacts.map((contact, index) => {
+          let addIconDisplay = 'none';
+          let checkIconDisplay = 'none';
+
+          if (contact.type === 'sentFriendRequest') {
+            checkIconDisplay = 'inline-flex';
+          } else if (contact.type) {
+            addIconDisplay = 'inline-flex';
+          }
+
+          return (
+            <ListItem
+              key={index}
+              selected={activeIndex === index}
+              button
+              disableRipple
+              onClick={handleContactClick(contact, index)}
+              className={classes.listItem}
+            >
+              <ContactItem
+                name={contact.name}
+                status={contact.status}
+                image={contact.image}
+                onClick={handleProfileClick(contact)}
+              />
+
+              <Fab
+                style={{ display: addIconDisplay }}
+                color="secondary"
+                aria-label="Add Contact"
+                className={classes.addContactButton}
+                onClick={handleAddContact(contact)}
+              >
+                <AddIcon />
+              </Fab>
+              <CheckIcon
+                style={{ display: checkIconDisplay }}
+                className={classes.checkSign}
+              />
+            </ListItem>
+          );
+        })}
       </List>
     </>
   );

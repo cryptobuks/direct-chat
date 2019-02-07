@@ -72,6 +72,10 @@ class Api {
     return response.json;
   }
 
+  async sendFriendRequest(email) {
+    await this.api('sendFriendRequest', { contact: email });
+  }
+
   async fetchRecentChatContact() {
     const response = await this.api('fetchRecentChatContact');
     return response.json;

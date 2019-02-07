@@ -45,11 +45,26 @@ class ContactStore {
     messageStore.setCurrentSender(this.myContact.email);
   }
 
+  isEqual(contactsA, contactsB) {
+    if (contactsA.length !== contactsB.length) {
+      return false;
+    }
+
+    contactsA.forEach(contact => {
+      if (!contactsB.some(c => c.email === contact.emaill)) {
+        return false;
+      }
+    });
+
+    return true;
+  }
+
   async fetchAllContact() {
     this.loadingAllContacts = true;
     const json = await api.fetchAllContact();
     json.forEach(
       action(contact => {
+        contact.friend = true;
         this.allContacts.push(contact);
         this.allContactsAlways.push(contact);
       })
@@ -58,13 +73,19 @@ class ContactStore {
   }
 
   async fetchContactsWithKeywords(keyword) {
-    this.allContacts = [];
     const json = await api.fetchContactsWithKeywords(keyword);
-    json.forEach(
-      action(contact => {
-        this.allContacts.push(contact);
-      })
-    );
+    if (json.forEach) {
+      const contacts = [];
+      json.forEach(
+        action(contact => {
+          contacts.push(contact);
+        })
+      );
+
+      if (!this.isEqual(this.allContacts, contacts)) {
+        this.allContacts = contacts;
+      }
+    }
   }
 
   async fetchRecentChatContact() {

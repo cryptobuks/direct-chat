@@ -28,6 +28,18 @@ const contactItemStyle = {
   globalSearchLableOff: {
     ...globalSearchLable,
     color: 'gray'
+  },
+  addContactButton: {
+    width: '2rem',
+    height: '2rem',
+    minHeight: 'unset'
+  },
+  listItem: {
+    backgroundColor: 'transparent',
+    justifyContent: 'space-between'
+  },
+  checkSign: {
+    color: 'green'
   }
 };
 

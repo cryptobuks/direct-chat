@@ -11,6 +11,11 @@ class NotificationStore {
     json.forEach(action(notification => this.notifications.push(notification)));
     this.loading = false;
   }
+
+  async sendFriendRequest(contact) {
+    console.log('sendFriendRequest:' + contact.email);
+    await api.sendFriendRequest(contact.email);
+  }
 }
 
 const notificationStore = new NotificationStore();

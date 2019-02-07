@@ -6,7 +6,7 @@ import classnames from 'classnames';
 import { Button } from '@material-ui/core';
 
 function ContactItem(props) {
-  const { classes, name, status, image } = props;
+  const { classes, name, status, image, onClick } = props;
   const online = status === 'online';
   const offline = status === 'away';
 
@@ -16,6 +16,7 @@ function ContactItem(props) {
         <img
           alt="avatar"
           src={image}
+          onClick={onClick}
           className={classnames({
             [classes.avatar]: true,
             [classes.online]: online,

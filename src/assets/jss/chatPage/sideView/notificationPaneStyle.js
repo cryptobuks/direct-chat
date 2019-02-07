@@ -2,7 +2,7 @@ import buttonStyle from 'assets/jss/components/buttonStyle';
 
 const notificationPaneStyle = {
   container: {},
-  listItem: { padding: '0.5rem' },
+  listItem: { padding: '0.5rem', justifyContent: 'space-between' },
   button: {
     ...buttonStyle.button,
     borderRadius: '3px',
